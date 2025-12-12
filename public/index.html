@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sip & Snap</title>
+
+  <!-- ✅ Use SAME background as login -->
+  <link rel="stylesheet" href="/style.css" />
+
+  <style>
+    /* ---------- HEADER ---------- */
+    header{
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 14px 18px;
+      background: linear-gradient(
+        180deg,
+        rgba(7, 24, 18, 0.85),
+        rgba(5, 15, 12, 0.55)
+      );
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(57, 217, 138, 0.25);
+    }
+
+    .site-title{
+      font-size: 50px;
+      font-family: "Brush Script MT", cursive;
+      letter-spacing: 0.06em;
+    }
+
+    .header-right{
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    /* ---------- BROWN BUTTONS ---------- */
+    .btn-brown{
+      background: linear-gradient(180deg, #8b623c, #6f4b2e);
+      color: #f4efe9;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,.35);
+    }
+
+    .btn-brown:hover{
+      filter: brightness(1.05);
+    }
+
+    /* ---------- LAYOUT ---------- */
+    main{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 115px 16px 24px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .card{
+      background:
+        radial-gradient(
+          700px 200px at 20% 0%,
+          rgba(57, 217, 138, 0.12),
+          transparent 55%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(11, 31, 23, 0.95),
+          rgba(10, 26, 19, 0.95)
+        );
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid rgba(57, 217, 138, 0.35);
+      box-shadow: 0 18px 60px rgba(0,0,0,.45);
+    }
+
+    .row{
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .grid{
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+      gap: 12px;
+    }
+
+    .cocktail-card{
+      background: rgba(7, 20, 15, 0.6);
+      border-radius: 14px;
+      padding: 10px;
+      cursor: pointer;
+      border: 1px solid rgba(57, 217, 138, 0.35);
+    }
+
+    .cocktail-card img{
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    /* ---------- CURRENT PICK IMAGES ---------- */
+    .current-pick-images{
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .current-pick-images img{
+      width: 100%;
+      height: auto;
+      border-radius: 14px;
+      border: 1px solid rgba(57,217,138,.35);
+    }
+
+    @media (max-width: 700px){
+      .current-pick-images{
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ---------- FAVORITES GRID ---------- */
+    #favorites-list{
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 700px){
+      #favorites-list{
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ---------- FAVORITES IMAGE PAIR ---------- */
+    .fav-images{
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .fav-images img{
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .muted{
+      opacity: .85;
+      font-size: 14px;
+    }
+
+    /* ---------- BACK TO TOP BUTTON ---------- */
+    #to-top{
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 90;
+      background: linear-gradient(180deg, #8b623c, #6f4b2e);
+      color: #f4efe9;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,.45);
+    }
+
+    #to-top:hover{
+      filter: brightness(1.05);
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <strong class="site-title">Sip & Snap</strong>
+
+  <div class="header-right">
+    <div class="row">
+      <button class="btn-brown" id="favorites-jump">Favorites</button>
+      <form action="/auth/logout" method="POST">
+        <button class="btn-brown" type="submit">Logout</button>
+      </form>
+    </div>
+    <span class="badge" id="user-badge">Loading…</span>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <h2>Browse Cocktails</h2>
+    <div class="muted">Search or browse A–Z, then select a cocktail.</div>
+
+    <div class="row" style="margin-top:12px;">
+      <input id="search-input" class="input" placeholder="Search cocktails" />
+      <select id="az-select" class="select">
+        <option value="">A–Z</option>
+        <option value="a">A</option><option value="b">B</option>
+        <option value="c">C</option><option value="d">D</option>
+        <option value="e">E</option><option value="f">F</option>
+        <option value="g">G</option><option value="h">H</option>
+        <option value="i">I</option><option value="j">J</option>
+        <option value="k">K</option><option value="l">L</option>
+        <option value="m">M</option><option value="n">N</option>
+        <option value="o">O</option><option value="p">P</option>
+        <option value="q">Q</option><option value="r">R</option>
+        <option value="s">S</option><option value="t">T</option>
+        <option value="u">U</option><option value="v">V</option>
+        <option value="w">W</option><option value="x">X</option>
+        <option value="y">Y</option><option value="z">Z</option>
+      </select>
+      <button class="btn-brown" id="clear-btn">Clear</button>
+    </div>
+
+    <div id="cocktail-grid" class="grid"></div>
+  </div>
+
+  <div class="card" id="current-pick-card">
+    <h2>Current Pick</h2>
+    <h3 id="cocktail-name">No cocktail yet</h3>
+    <div class="muted" id="cocktail-instructions"></div>
+
+    <div class="current-pick-images">
+      <img id="cocktail-image" alt="Cocktail image" />
+      <img id="mood-image" alt="Mood image" />
+    </div>
+
+    <div class="row" style="margin-top:12px;">
+      <button class="btn-brown" id="save-btn">Save to Favorites</button>
+      <button class="btn-brown" id="load-btn">Load My Favorites</button>
+    </div>
+
+    <div class="muted" id="save-note" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="card" id="favorites-card">
+    <h2>Favorites</h2>
+    <div class="muted">Saved drinks</div>
+    <div id="favorites-list"></div>
+  </div>
+</main>
+
+<!-- Back to top -->
+<button id="to-top" aria-label="Back to top">↑ Top</button>
+
+<script>
+  document.getElementById("to-top")?.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  document.getElementById("favorites-jump")?.addEventListener("click", () => {
+    document.getElementById("favorites-card")
+      .scrollIntoView({ behavior: "smooth" });
+  });
+</script>
+
+<script src="/app.js"></script>
+</body>
+</html>
